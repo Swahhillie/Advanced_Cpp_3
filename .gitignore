@@ -1,0 +1,5 @@
+*.layout
+*.html
+/obj/*
+/doxygen/*
+output.txt
