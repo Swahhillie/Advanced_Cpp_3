@@ -34,8 +34,11 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="include/node.h" />
 		<Unit filename="include/sorted_binary_tree.hpp" />
+		<Unit filename="include/tree_names.hpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/node.cpp" />
 		<Unit filename="src/sorted_binary_tree.cpp">
 			<Option compile="0" />
 			<Option link="0" />
