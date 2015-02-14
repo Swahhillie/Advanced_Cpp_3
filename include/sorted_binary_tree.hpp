@@ -31,11 +31,6 @@ public:
             left(NULL),
             right(NULL),
             value(a_value) {}
-        virtual ~Node()
-        {
-            delete left;
-            delete right;
-        }
 
         Node* left;
         Node* right;
@@ -122,12 +117,13 @@ protected:
 
 
     void insert(Node* node, T value);
-    void erase(Node* node, T value, Node* parent);
+    Node* erase(Node* node, T value);
+    void DeleteSubtree(Node* node);
     void get_sorted(iterator& it, Node* root)const;
     void print_debug(std::ostream& output, Node* node, int indent)const;
     void print_debug_sorted(std::ostream& output, Node* node, Node* parent)const;
 
-    Node* find(Node* node, T a_value, Node*& parent)const;
+    Node* find(Node* node, T a_value)const;
     //find the lowest value
     Node* begin(Node* node)const;
     Node* end(Node* node)const;

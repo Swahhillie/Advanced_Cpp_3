@@ -13,15 +13,24 @@ SortedBinaryTree<T>::SortedBinaryTree():
 template <class T>
 SortedBinaryTree<T>::~SortedBinaryTree()
 {
-    delete m_root;
-    m_root = NULL;
+    clear();
 }
 template <class T>
 void SortedBinaryTree<T>::clear()
 {
-    delete m_root;
+    //delete all the nodes
+    DeleteSubtree(m_root);
     m_root = NULL;
     m_size = 0;
+}
+template <class T>
+void SortedBinaryTree<T>::DeleteSubtree(Node* node){
+    if(node != NULL){
+        DeleteSubtree(node->left);
+        DeleteSubtree(node->right);
+        delete node;
+    }
+
 }
 template <class T>
 void SortedBinaryTree<T>::insert(T value)
@@ -40,74 +49,62 @@ void SortedBinaryTree<T>::insert(T value)
 template <class T>
 void SortedBinaryTree<T>::erase(T value)
 {
-    erase(m_root, value, NULL);
+    m_root = erase(m_root, value);
 }
 
 
 template <class T>
-void SortedBinaryTree<T>::erase(Node* root, T value, Node* parent)
+typename SortedBinaryTree<T>::Node*  SortedBinaryTree<T>::erase(Node* root, T value)
 {
     //http://www.algolist.net/Data_structures/Binary_search_tree/Removal
+    //https://www.youtube.com/watch?v=gcULXE7ViZw
 
-    //find the first node with the value
-    if(Node* to_delete = find(root, value, parent))
+    if(root == NULL) return root;
+    else if(value < root->value) root->left = erase(root->left, value);
+    else if (value > root->value) root->right = erase(root->right, value);
+    else
     {
-
         //case 1: no children
-        if(!to_delete->left && !to_delete->right)
+        if(root->left == NULL && root->right == NULL)
         {
-            if(parent)
-            {
-                if(parent->left == to_delete)
-                    parent->left = NULL;
-                else
-                    parent->right = NULL;
-            }
-            else
-            {
-                m_root = NULL;
-            }
-            delete to_delete;
-            m_size --;
-        }
-        //case 3: 2 children
-        else if(to_delete->left && to_delete->right)
-        {
-
-            Node* min_node = begin(to_delete->right);
-            to_delete->value = min_node->value; //duplicate value
-            //run remove on the right sub tree to delete the duplicate value
-            //the duplicate value has max 1 child.
-            erase(to_delete->right, value, NULL);
-
+            delete root;
+            root = NULL;
+            m_size--;
         }
         //case 2: 1 child
-        else
+        else if(root->left == NULL)
         {
-            if(parent)
-            {
-                if(parent->left == to_delete)
-                    parent->left = to_delete->left? to_delete->left : to_delete->right;
-                else
-                    parent->right = to_delete->left? to_delete->left : to_delete->right;
-            }
-            else
-            {
-                m_root = to_delete->left? to_delete->left : to_delete->right;
-            }
-            delete to_delete;
-            m_size --;
+            Node* temp = root;
+            root = root->right;
+            delete temp;
+            m_size--;
+        }
+        else if(root->right == NULL)
+        {
+            Node* temp = root;
+            root = root->left;
+            delete temp;
+            m_size--;
+        }
+        //case 3: 2 children
+        else{
+            Node* temp = begin(root->right);
+            root->value = temp->value;
+            root->right = erase(root->right, temp->value);
 
         }
-
     }
-
+    return root;
 
 }
+
+
+
 template <class T>
 void SortedBinaryTree<T>::erase(const iterator& it)
 {
-    if(it.current >= 0){
+    if(it.current >= 0)
+    {
         erase(*it);
     }
 }
@@ -116,8 +113,7 @@ int SortedBinaryTree<T>::count(T value)const
 {
     int count = 0;
     Node* node = m_root;
-    Node* parent = NULL;
-    while((node = find(node, value, parent)))
+    while((node = find(node, value)))
     {
         count ++;
         node = node->left;
@@ -195,25 +191,24 @@ void SortedBinaryTree<T>::print_debug_sorted(std::ostream& output, Node* node, N
     }
 }
 template <class T>
-typename SortedBinaryTree<T>::Node* SortedBinaryTree<T>::find(Node* node, T value, Node*& parent)const
+typename SortedBinaryTree<T>::Node* SortedBinaryTree<T>::find(Node* node, T value)const
 {
 
     if(node == NULL)return NULL;
 
-    if(node->value == value)
+    if(value < node->value)
+    {
+        return find(node->left, value);
+    }
+    else if (value == node->value)
     {
         return node;
     }
-    if(value < node->value)
-    {
-        parent = node;
-        return find(node->left, value, parent);
-    }
     else
     {
-        parent = node;
-        return find(node->right,value, parent);
+        return find(node->right,value);
     }
+
 }
 template<class T>
 typename SortedBinaryTree<T>::Node* SortedBinaryTree<T>::begin(Node* node)const
