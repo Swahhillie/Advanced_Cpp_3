@@ -81,7 +81,20 @@ public:
         {
             //if we iterate past the last element set the current element to -1. this should compare equal to the end iterator.
             //also calling ++ on the end node should not iterate back into range.
-            current = current + 1 >= sorted.size() || current == -1? -1 : current + 1;
+            if(current + 1 >= sorted.size()){
+                //iterated past the last element. this iterator now equals the end iterator
+               current = -1;
+            }
+            else if(current == -1){
+                //cant iterate an end pointer
+            }
+            else{
+                //increment the index by one
+                current = current + 1;
+            }
+
+            //current = current + 1 >= sorted.size() || current == -1? -1 : current + 1;
+
             return *this;
         }
         // dereference:	*xxx
